@@ -92,6 +92,7 @@ let appSettings = {
   lastSeenChangelogVersion: null,
   seenWhatsNewTours: [], // ids van "Nieuw in deze versie"-rondleidingen die al getoond zijn
   openAllLinksInNewTab: false,
+  refreshOnTabSwitch: true, // tab herladen als je ernaar wisselt
   tabBarDisabled: false, // tabbalk uit: één scherm, balk toont alleen het instellingen-icoon
   tabsOwnRow: true, // tabs op een eigen rij onder de knoppen (uit: alles op één balk)
   groupsInBar: true, // bij een eigen rij: tabgroepen als mappen naast elkaar (uit: één mapknop met menu)
@@ -206,6 +207,7 @@ function loadSettings() {
       lastSeenChangelogVersion: typeof parsed.lastSeenChangelogVersion === 'string' ? parsed.lastSeenChangelogVersion : null,
       seenWhatsNewTours: Array.isArray(parsed.seenWhatsNewTours) ? parsed.seenWhatsNewTours : [],
       openAllLinksInNewTab: typeof parsed.openAllLinksInNewTab === 'boolean' ? parsed.openAllLinksInNewTab : false,
+      refreshOnTabSwitch: typeof parsed.refreshOnTabSwitch === 'boolean' ? parsed.refreshOnTabSwitch : true,
       tabBarDisabled: typeof parsed.tabBarDisabled === 'boolean' ? parsed.tabBarDisabled : false,
       tabsOwnRow: typeof parsed.tabsOwnRow === 'boolean' ? parsed.tabsOwnRow : true,
       groupsInBar: typeof parsed.groupsInBar === 'boolean' ? parsed.groupsInBar : true,
@@ -1934,6 +1936,8 @@ function switchTab(tabId, { recordHistory = true } = {}) {
       sendGroupState();
     }
   }
+  // Verse data bij terugkomen op een tab; vóór het gordijn, zodat dat op de herlaad wacht.
+  if (isRealSwitch && appSettings.refreshOnTabSwitch && !target.webContents.isLoading()) target.webContents.reload();
   // Gordijn vóór het tonen van de nieuwe tab, zodat die geen moment
   // half-opgebouwd in beeld komt.
   if (isRealSwitch) coverActiveView(target);
@@ -3073,6 +3077,7 @@ ipcMain.handle('get-settings', (event) => {
     tabGroups: appSettings.tabGroups,
     defaultGroupName: appSettings.defaultGroupName,
     openAllLinksInNewTab: appSettings.openAllLinksInNewTab,
+    refreshOnTabSwitch: appSettings.refreshOnTabSwitch,
     tabBarDisabled: appSettings.tabBarDisabled,
     tabsOwnRow: appSettings.tabsOwnRow,
     groupsInBar: appSettings.groupsInBar,
@@ -3632,6 +3637,11 @@ ipcMain.on('set-open-all-links-in-new-tab', (event, value) => {
   for (const view of tabs.values()) {
     view.webContents.executeJavaScript(`window.__electronForceNewTab = ${appSettings.openAllLinksInNewTab};`).catch(() => {});
   }
+});
+ipcMain.on('set-refresh-on-tab-switch', (event, value) => {
+  if (event.sender !== mainWindow.webContents) return;
+  appSettings.refreshOnTabSwitch = !!value;
+  saveSettings();
 });
 ipcMain.handle('check-for-updates-now', (event) => {
   if (event.sender !== mainWindow.webContents) return { status: 'error' };

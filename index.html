@@ -4424,6 +4424,13 @@
         </span>
         <input type="checkbox" class="switch" id="open-all-links-new-tab-checkbox">
       </label>
+      <label class="general-toggle">
+        <span class="toggle-text">
+          Tab vernieuwen bij wisselen
+          <span class="settings-hint">Ga je naar een andere tab, dan herlaadt die, zodat je meteen de laatste wijzigingen ziet. Niet-opgeslagen invoer in die tab gaat dan verloren.</span>
+        </span>
+        <input type="checkbox" class="switch" id="refresh-on-tab-switch-checkbox">
+      </label>
       <div class="general-choice">
         <span class="toggle-text">
           Tabbalk
@@ -6700,6 +6707,7 @@
         document.getElementById('settings-beta-badge').classList.toggle('hidden', !String(settings.appVersion || '').includes('-'));
         betaUpdatesCheckbox.checked = !!settings.betaUpdates;
         openAllLinksNewTabCheckbox.checked = !!settings.openAllLinksInNewTab;
+        refreshOnTabSwitchCheckbox.checked = settings.refreshOnTabSwitch !== false;
         renderTabBarDisabled(settings.tabBarDisabled);
         renderTabsOwnRow(settings.tabsOwnRow !== false);
         renderGroupsInBar(settings.groupsInBar !== false);
@@ -6816,6 +6824,10 @@
 
     openAllLinksNewTabCheckbox.addEventListener('change', () => {
       window.electronAPI.setOpenAllLinksInNewTab(openAllLinksNewTabCheckbox.checked);
+    });
+    const refreshOnTabSwitchCheckbox = document.getElementById('refresh-on-tab-switch-checkbox');
+    refreshOnTabSwitchCheckbox.addEventListener('change', () => {
+      window.electronAPI.setRefreshOnTabSwitch(refreshOnTabSwitchCheckbox.checked);
     });
 
     // Indeling van de tabbalk (Instellingen > Tabs), drie kaartjes:
