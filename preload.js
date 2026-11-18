@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   copyToClipboard: (text) => ipcRenderer.send('copy-to-clipboard', text),
   getSettings: () => ipcRenderer.invoke('get-settings'),
   setOpenAllLinksInNewTab: (value) => ipcRenderer.send('set-open-all-links-in-new-tab', value),
+  setRefreshOnTabSwitch: (value) => ipcRenderer.send('set-refresh-on-tab-switch', value),
   setTabBarDisabled: (value) => ipcRenderer.send('set-tab-bar-disabled', value),
   setTabsOwnRow: (value) => ipcRenderer.send('set-tabs-own-row', value),
   setGroupsInBar: (value) => ipcRenderer.send('set-groups-in-bar', value),
