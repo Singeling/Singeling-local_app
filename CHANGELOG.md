@@ -2,6 +2,14 @@
 
 Alle belangrijke wijzigingen aan Singeling App worden hier bijgehouden. De nieuwste versie staat bovenaan.
 
+## [1.3.4] - 2026-11-18
+
+### Toegevoegd
+- **Tab vernieuwen bij wisselen**: ga je naar een andere tab, dan herlaadt die, zodat je meteen de laatste wijzigingen ziet. Uit te zetten in Instellingen > Tabs. Let op: niet-opgeslagen invoer in die tab gaat dan verloren.
+
+### Gewijzigd
+- Updates komen voortaan uit de repository van Singeling op GitHub.
+
 ## [1.3.3] - 2026-11-10
 
 ### Gewijzigd
