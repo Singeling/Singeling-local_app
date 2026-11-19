@@ -1911,6 +1911,10 @@ function createTab(url, makeActive = true, lockTab = false, parentTabId = null, 
 // previousTabs-koppeling van de tab waar we heen gaan niet overschreven
 // worden, anders wijzen twee tabs elkaar aan als "vorige tab" en pingpongt
 // de terugknop voor altijd tussen diezelfde twee tabs heen en weer.
+// Herladen bij wisselen pas als de tab zo lang niet bekeken is: snel heen en weer klikken belast de server anders bij elke klik.
+const REFRESH_AFTER_MS = 60 * 1000;
+const tabLeftAt = new Map(); // tabId -> moment dat je de tab verliet
+
 function switchTab(tabId, { recordHistory = true } = {}) {
   const target = tabs.get(tabId);
   if (!target) return;
@@ -1928,6 +1932,8 @@ function switchTab(tabId, { recordHistory = true } = {}) {
   }
 
   const isRealSwitch = activeTabId && activeTabId !== tabId;
+  if (isRealSwitch) tabLeftAt.set(activeTabId, Date.now());
+  const longAway = Date.now() - (tabLeftAt.get(tabId) ?? Date.now()) > REFRESH_AFTER_MS;
   activeTabId = tabId;
   if (!isDetachedTab(tabId)) {
     lastTabOfGroup.set(groupOf(tabId) || '', tabId);
@@ -1937,7 +1943,7 @@ function switchTab(tabId, { recordHistory = true } = {}) {
     }
   }
   // Verse data bij terugkomen op een tab; vóór het gordijn, zodat dat op de herlaad wacht.
-  if (isRealSwitch && appSettings.refreshOnTabSwitch && !target.webContents.isLoading()) target.webContents.reload();
+  if (isRealSwitch && longAway && appSettings.refreshOnTabSwitch && !target.webContents.isLoading()) target.webContents.reload();
   // Gordijn vóór het tonen van de nieuwe tab, zodat die geen moment
   // half-opgebouwd in beeld komt.
   if (isRealSwitch) coverActiveView(target);
