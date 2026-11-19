@@ -2,6 +2,11 @@
 
 Alle belangrijke wijzigingen aan Singeling App worden hier bijgehouden. De nieuwste versie staat bovenaan.
 
+## [1.3.5] - 2026-11-19
+
+### Gewijzigd
+- **Tab vernieuwen bij wisselen** gebeurt alleen nog als je de tab langer dan een minuut niet hebt bekeken. Snel heen en weer klikken tussen tabs herlaadt niets meer, wat de server flink ontlast.
+
 ## [1.3.4] - 2026-11-18
 
 ### Toegevoegd
